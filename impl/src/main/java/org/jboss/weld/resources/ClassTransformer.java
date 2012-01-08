@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.jboss.weld.bootstrap.api.Service;
+import org.jboss.weld.introspector.InternalWeldClass;
 import org.jboss.weld.introspector.WeldAnnotation;
 import org.jboss.weld.introspector.WeldClass;
 import org.jboss.weld.introspector.jlr.WeldAnnotationImpl;
@@ -201,8 +202,11 @@ public class ClassTransformer implements Service
    }
 
    @SuppressWarnings("unchecked")
-   public <T> WeldClass<T> loadClass(final AnnotatedType<T> clazz)
-   {
+    public <T> WeldClass<T> loadClass(final AnnotatedType<T> clazz) {
+        if (clazz instanceof InternalWeldClass) {
+            InternalWeldClass iwc = (InternalWeldClass) clazz;
+            return iwc.delegate();
+        }
       return (WeldClass<T>) annotatedTypes.get(clazz);
    }
 
