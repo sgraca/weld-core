@@ -30,12 +30,15 @@ import static org.jboss.weld.manager.Enabled.EMPTY_ENABLED;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.inject.spi.Bean;
@@ -146,7 +149,11 @@ public class WeldBootstrap implements Bootstrap
          this.environment = environment;
          this.deployment = deployment;
          this.contexts = contexts;
-         this.managerAwareBeanDeploymentArchives = new ConcurrentHashMap<BeanDeploymentArchive, BeanDeployment>();
+         this.managerAwareBeanDeploymentArchives = new ConcurrentSkipListMap<BeanDeploymentArchive, BeanDeployment>(new Comparator<BeanDeploymentArchive>() {
+             public int compare(BeanDeploymentArchive o1, BeanDeploymentArchive o2) {
+                 return o1.getId().compareTo(o2.getId());
+             }
+         });
       }
 
       public Map<BeanDeploymentArchive, BeanDeployment> visit()
