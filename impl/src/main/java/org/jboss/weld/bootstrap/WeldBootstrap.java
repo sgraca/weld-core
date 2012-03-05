@@ -94,12 +94,13 @@ import javax.enterprise.inject.spi.Extension;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import static org.jboss.weld.logging.Category.BOOTSTRAP;
 import static org.jboss.weld.logging.Category.VERSION;
@@ -142,7 +143,11 @@ public class WeldBootstrap implements Bootstrap {
             this.environment = environment;
             this.deployment = deployment;
             this.contexts = contexts;
-            this.managerAwareBeanDeploymentArchives = new ConcurrentHashMap<BeanDeploymentArchive, BeanDeployment>();
+            this.managerAwareBeanDeploymentArchives = new ConcurrentSkipListMap<BeanDeploymentArchive, BeanDeployment>(new Comparator<BeanDeploymentArchive>() {
+                public int compare(BeanDeploymentArchive o1, BeanDeploymentArchive o2) {
+                    return o1.getId().compareTo(o2.getId());
+                }
+            });
         }
 
         public Map<BeanDeploymentArchive, BeanDeployment> visit() {
